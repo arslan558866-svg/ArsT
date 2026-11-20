@@ -1,5 +1,5 @@
-const CACHE = "sozday-sebya-v4";
-const FILES = ["./", "./index.html", "./manifest.webmanifest", "./bear-mascot.png"];
+const CACHE = "sozday-sebya-v5";
+const FILES = ["./", "./index.html", "./manifest.webmanifest", "./bear-mascot.png", ...Array.from({length:16},(_,i)=>`./exercise-${String(i+1).padStart(2,"0")}.jpg`)];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)));
   self.skipWaiting();
