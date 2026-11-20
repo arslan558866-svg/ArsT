@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Создай себя">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="assets/icon-192.png">
+
 <title>Мой тренировочный дневник</title>
 <style>
 :root{--navy:#14243A;--gold:#B89A62;--cream:#F5F2EA;--ink:#202936;--muted:#718096;--line:#e4e7eb;--teal:#477C78;--white:#fff}
 *{box-sizing:border-box}body{margin:0;background:#f3f5f7;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 header{position:relative;overflow:hidden;background:var(--navy);color:white;padding:22px 18px 18px;padding-top:calc(22px + env(safe-area-inset-top))}
-header:after{content:"";position:absolute;right:-20px;top:22px;width:104px;height:104px;background:url("assets/bear-mascot.png") center/cover;border-radius:22px;opacity:.95;box-shadow:0 8px 28px #0008;animation:bearFloat 3s ease-in-out infinite} @keyframes bearFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-5px) rotate(1deg)}}
+header:after{content:"";position:absolute;right:-20px;top:22px;width:104px;height:104px;background:url("bear-mascot.png") center/cover;border-radius:22px;opacity:.95;box-shadow:0 8px 28px #0008;animation:bearFloat 3s ease-in-out infinite} @keyframes bearFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-5px) rotate(1deg)}}
 header .eyebrow{color:#d6c39d;font-size:11px;letter-spacing:1.7px;text-transform:uppercase}
 h1{font-size:23px;margin:7px 0 4px}header p{margin:0;color:#d6dce4;font-size:13px}
 main{max-width:760px;margin:auto;padding:14px 14px 40px}
@@ -38,7 +38,7 @@ textarea{min-height:70px;resize:vertical}
 .rest-badge{display:inline-block;background:#edf1f5;color:#14243A;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:700;margin:7px 0}.rest-timer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f7f8fa;border:1px solid var(--line);border-radius:11px;padding:9px;margin:5px 0 10px}.rest-clock{font-size:20px;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;min-width:58px}.rest-timer button{border:0;border-radius:8px;padding:8px 10px;font-weight:700;background:var(--navy);color:#fff;font-size:11px}.rest-timer button.reset-rest{background:#edf1f5;color:var(--navy)}.rest-done{font-size:11px;color:var(--teal);font-weight:700}.exercise-actions{display:flex;gap:8px;margin-top:8px}.exercise-actions .btn{margin:0;padding:9px 10px;font-size:12px}.add-exercise-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:14px}.add-exercise-row .btn{width:auto;margin:0;white-space:nowrap;padding:12px}.setrow .remove-set{border:0;background:#fbeeee;color:#9b3333;border-radius:8px;padding:7px 5px;font-size:11px}.sethead{grid-template-columns:34px 1fr 1fr 30px}.setrow{grid-template-columns:34px 1fr 1fr 30px}
 .exercise-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
 .exercise-title strong{font-size:14px}.prescription{font-size:12px;color:var(--muted);white-space:nowrap}
-.sethead,.setrow{display:grid;grid-template-columns:34px 1fr 1fr;gap:8px;align-items:center}
+.sethead,.setrow{display:grid;grid-template-columns:34px minmax(0,1fr) minmax(0,1fr) 30px;gap:8px;align-items:center}
 .sethead{font-size:11px;color:var(--muted);padding:9px 0 4px}
 .setnum{font-size:12px;color:var(--muted);text-align:center}
 .setrow input{padding:9px 7px;text-align:center}
@@ -228,7 +228,7 @@ function makeExerciseCard(ex,i,previous){
  const guideHtml=guide?`<details class="exercise-guide"><summary>Как выполнять · техника и подсказки</summary><ol>${guide.steps.map(x=>`<li>${x}</li>`).join("")}</ol><div class="exercise-tip"><b>Важно:</b> ${guide.tip}</div></details>`:
  `<details class="exercise-guide"><summary>Как выполнять · техника и подсказки</summary><ol><li>Займи устойчивое исходное положение и настрой оборудование.</li><li>Выполняй движение плавно, без рывков и раскачивания.</li><li>Контролируй возврат в исходное положение.</li><li>Дыши свободно, не задерживай дыхание.</li></ol><div class="exercise-tip"><b>Важно:</b> Работай в безболезненной амплитуде и прекращай упражнение при боли.</div></details>`;
  const rest=restByExercise[name]||75;
- wrap.innerHTML=`<div class="exercise-title"><strong>${i+1}. ${name}</strong><span class="prescription">${prescribed} × ${range}</span></div>${photo}${guideHtml}<div class="rest-badge">Отдых между подходами: ${formatRest(rest)}</div><div class="sethead"><span>№</span><span>Вес, кг</span><span>Повторы</span><span></span></div><div class="sets-container"></div><div class="exercise-actions"><button type="button" class="btn light add-set">＋ Добавить подход</button><button type="button" class="btn light remove-exercise">Убрать</button></div>`;
+ wrap.innerHTML=`<div class="exercise-title"><strong>${i+1}. ${name}</strong><span class="prescription">${prescribed} × ${range}</span></div>${photo}${guideHtml}<div class="rest-badge">Отдых между подходами: ${formatRest(rest)}</div><div class="rest-timer"><span class="rest-clock"></span><button type="button" class="start-rest">Старт отдыха</button><button type="button" class="reset-rest">Сброс</button><span class="rest-done" aria-live="polite"></span></div><div class="sethead"><span>№</span><span>Вес, кг</span><span>Повторы</span><span></span></div><div class="sets-container"></div><div class="exercise-actions"><button type="button" class="btn light add-set">＋ Добавить подход</button><button type="button" class="btn light remove-exercise">Убрать</button></div>`;
  const setsContainer=wrap.querySelector(".sets-container");
  const oldSets=prevExercise?.sets||[];
  const count=Math.max(prescribed,oldSets.length);
@@ -238,6 +238,7 @@ function makeExerciseCard(ex,i,previous){
  let remaining=rest, timerId=null;
  const clock=wrap.querySelector(".rest-clock"), startBtn=wrap.querySelector(".start-rest"), done=wrap.querySelector(".rest-done");
  const paint=()=>{clock.textContent=formatRest(remaining);};
+ paint();
  startBtn.onclick=()=>{
   if(timerId){clearInterval(timerId);timerId=null;startBtn.textContent="Продолжить";return;}
   if(remaining<=0)remaining=rest;
