@@ -61,6 +61,7 @@ footer{text-align:center;color:#8b96a5;font-size:11px;padding:10px}
 .cal-cell .dot{display:block;width:6px;height:6px;border-radius:50%;background:var(--gold);margin:4px auto 0}
 .cal-cell.done{background:#edf4f2;border-color:#b7d0cb}
 .cal-cell.today{outline:2px solid var(--gold)}
+.cal-cell.selected{border:2px solid var(--navy);background:#edf1f5;font-weight:800}
 .cal-head{font-size:10px;color:var(--muted);text-align:center}
 .calendar-nav{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .calendar-nav button{border:0;background:#edf1f5;color:var(--navy);border-radius:9px;padding:8px 12px;font-weight:700}
@@ -220,7 +221,7 @@ function makeExerciseCard(ex,i,previous){
  const name=ex[0], prescribed=Number(ex[1])||2, range=ex[2]||"8–12";
  const guide=exerciseGuides[name];
  const imgNo=photoByExercise[name];
- const imgSrc=imgNo?`exercises/exercise-${String(imgNo).padStart(2,"0")}.jpg`:"";
+ const imgSrc=imgNo?`./exercise-${String(imgNo).padStart(2,"0")}.jpg`:"";
  const prevExercise=previous?.items?.find(x=>x.name===name);
  const wrap=document.createElement("div");wrap.className="exercise";wrap.dataset.name=name;
  const photo=imgSrc?`<div class="exercise-media"><img src="${imgSrc}" alt="Фото упражнения ${name}" loading="lazy"><div><div class="sub">Фото выполнения</div><div class="sub" style="margin-top:5px">${prescribed} подхода · ${range} повторений</div></div></div>`:
@@ -363,14 +364,15 @@ function renderCalendar(){
  for(let d=1;d<=days;d++){
   const date=new Date(year,month,d),iso=[year,String(month+1).padStart(2,"0"),String(d).padStart(2,"0")].join("-");
   const dow=(date.getDay()+6)%7,planned=dow===0?"A":dow===2?"B":dow===4?"C":null;
-  const cell=document.createElement("button");cell.type="button";cell.className="cal-cell"+(iso===today?" today":"");
+  const cell=document.createElement("button");cell.type="button";cell.className="cal-cell"+(iso===today?" today":"")+(iso===selected?" selected":"");
   const completed=planned&&done.has(iso+"|"+planned);
   if(completed)cell.classList.add("done");
   cell.innerHTML=`${d}${planned?`<span class="dot" style="background:${completed?'#477C78':'#B89A62'}"></span><small>${planned}</small>`:""}`;
-  cell.onclick=()=>{if(planned){day=planned;$("date").value=iso;render();window.scrollTo({top:0,behavior:"smooth"});}else{$("date").value=iso;}};
+  cell.onclick=()=>{if(planned){day=planned;$("date").value=iso;render();window.scrollTo({top:0,behavior:"smooth"});}else{$("date").value=iso;}renderCalendar();};
   grid.append(cell);
  }
 }
+$("date").addEventListener("change",()=>{if($("date").value){const [y,m]= $("date").value.split("-").map(Number);calendarMonth=new Date(y,m-1,1);}renderCalendar();});
 $("prevMonth").onclick=()=>{calendarMonth.setMonth(calendarMonth.getMonth()-1);renderCalendar()};
 $("nextMonth").onclick=()=>{calendarMonth.setMonth(calendarMonth.getMonth()+1);renderCalendar()};
 
