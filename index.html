@@ -35,7 +35,7 @@ textarea{min-height:70px;resize:vertical}
 .exercise-guide ol{padding-left:19px;margin:8px 0}.exercise-guide li{margin:4px 0}
 .exercise-tip{background:#f5f2ea;border-left:3px solid var(--gold);padding:8px 9px;border-radius:6px;margin-top:8px}
 .exercise-media .sub{line-height:1.4}
-.rest-badge{display:inline-block;background:#edf1f5;color:#14243A;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:700;margin:7px 0}.exercise-actions{display:flex;gap:8px;margin-top:8px}.exercise-actions .btn{margin:0;padding:9px 10px;font-size:12px}.add-exercise-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:14px}.add-exercise-row .btn{width:auto;margin:0;white-space:nowrap;padding:12px}.setrow .remove-set{border:0;background:#fbeeee;color:#9b3333;border-radius:8px;padding:7px 5px;font-size:11px}.sethead{grid-template-columns:34px 1fr 1fr 30px}.setrow{grid-template-columns:34px 1fr 1fr 30px}
+.rest-badge{display:inline-block;background:#edf1f5;color:#14243A;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:700;margin:7px 0}.rest-timer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f7f8fa;border:1px solid var(--line);border-radius:11px;padding:9px;margin:5px 0 10px}.rest-clock{font-size:20px;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;min-width:58px}.rest-timer button{border:0;border-radius:8px;padding:8px 10px;font-weight:700;background:var(--navy);color:#fff;font-size:11px}.rest-timer button.reset-rest{background:#edf1f5;color:var(--navy)}.rest-done{font-size:11px;color:var(--teal);font-weight:700}.exercise-actions{display:flex;gap:8px;margin-top:8px}.exercise-actions .btn{margin:0;padding:9px 10px;font-size:12px}.add-exercise-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:14px}.add-exercise-row .btn{width:auto;margin:0;white-space:nowrap;padding:12px}.setrow .remove-set{border:0;background:#fbeeee;color:#9b3333;border-radius:8px;padding:7px 5px;font-size:11px}.sethead{grid-template-columns:34px 1fr 1fr 30px}.setrow{grid-template-columns:34px 1fr 1fr 30px}
 .exercise-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
 .exercise-title strong{font-size:14px}.prescription{font-size:12px;color:var(--muted);white-space:nowrap}
 .sethead,.setrow{display:grid;grid-template-columns:34px 1fr 1fr;gap:8px;align-items:center}
@@ -136,7 +136,7 @@ footer{text-align:center;color:#8b96a5;font-size:11px;padding:10px}
     <button class="btn light" id="clear">Очистить все данные</button>
     <small class="note">Данные хранятся в памяти браузера на этом устройстве. Экспортируй резервную копию регулярно, чтобы не потерять записи.</small>
   </section>
-  <footer>Личный дневник тренировок · версия 1.2 · фото, техника, отдых и настраиваемые подходы</footer>
+  <footer>Личный дневник тренировок · версия 1.3 · фото, техника, подходы и таймер отдыха</footer>
 </main>
 <script>
 const program={
@@ -235,6 +235,26 @@ function makeExerciseCard(ex,i,previous){
  for(let s=0;s<count;s++) addSetRow(setsContainer,name,s,oldSets[s],s===0&&ex[3]!==""?ex[3]:"");
  wrap.querySelector(".add-set").onclick=()=>addSetRow(setsContainer,name,setsContainer.children.length);
  wrap.querySelector(".remove-exercise").onclick=()=>{if(confirm(`Убрать упражнение «${name}» из этой тренировки?`))wrap.remove();};
+ let remaining=rest, timerId=null;
+ const clock=wrap.querySelector(".rest-clock"), startBtn=wrap.querySelector(".start-rest"), done=wrap.querySelector(".rest-done");
+ const paint=()=>{clock.textContent=formatRest(remaining);};
+ startBtn.onclick=()=>{
+  if(timerId){clearInterval(timerId);timerId=null;startBtn.textContent="Продолжить";return;}
+  if(remaining<=0)remaining=rest;
+  startBtn.textContent="Пауза";done.textContent="";
+  timerId=setInterval(()=>{
+   remaining=Math.max(0,remaining-1);paint();
+   if(remaining===0){
+    clearInterval(timerId);timerId=null;startBtn.textContent="Повторить";
+    done.textContent="Отдых завершён!";
+    if("vibrate" in navigator) navigator.vibrate([180,100,180]);
+   }
+  },1000);
+ };
+ wrap.querySelector(".reset-rest").onclick=()=>{
+  if(timerId){clearInterval(timerId);timerId=null;}
+  remaining=rest;paint();startBtn.textContent="Старт отдыха";done.textContent="";
+ };
  return wrap;
 }
 function addSetRow(container,name,index,prevSet={},fallbackWeight=""){
@@ -260,27 +280,6 @@ function render(){
   $("exercises").insertBefore(card,addRow);$("extraExercise").value="";
   refreshProgressExerciseOptions();
  };
-}
-document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.day===day));
- $("dayTitle").textContent=program[day].title;
- $("exercises").innerHTML="";
- const previous=[...data.workouts].reverse().find(w=>w.day===day);
- program[day].items.forEach((ex,i)=>{
-  const prevExercise=previous?.items?.find(x=>x.name===ex[0]);
-  let wrap=document.createElement("div");wrap.className="exercise";
-  const guide=exerciseGuides[ex[0]];
-  const photo=guide?`<div class="exercise-media"><img src="assets/exercises/${guide.img}.jpg" alt="Иллюстрация упражнения ${ex[0]}" loading="lazy"><div><div class="sub">Иллюстрация техники</div><div class="sub" style="margin-top:5px">${guide.steps.length} шага · ${ex[1]} подхода</div></div></div><details class="exercise-guide"><summary>Как выполнять · техника и подсказки</summary><ol>${guide.steps.map(x=>`<li>${x}</li>`).join("")}</ol><div class="exercise-tip"><b>Важно:</b> ${guide.tip}</div></details>`:`<div class="exercise-guide"><b>Техника:</b> Двигайся плавно, сохраняй нейтральное положение корпуса и не выполняй повторения через боль.</div>`;
-  wrap.innerHTML=`<div class="exercise-title"><strong>${i+1}. ${ex[0]}</strong><span class="prescription">${ex[1]} × ${ex[2]}</span></div>${photo}<div class="sethead"><span>Подход</span><span>Вес, кг</span><span>Повторы</span></div>`;
-  for(let s=0;s<Number(ex[1]);s++){
-   let row=document.createElement("div");row.className="setrow";
-   const prevSet=prevExercise?.sets?.[s];
-   const initialWeight=prevSet?.weight || (s===0&&ex[3]!==""?ex[3]:"");
-   const initialReps=prevSet?.reps || "";
-   row.innerHTML=`<span class="setnum">${s+1}</span><input type="number" step="0.5" inputmode="decimal" placeholder="кг" aria-label="Вес ${ex[0]} подход ${s+1}" value="${initialWeight}"><input type="number" inputmode="numeric" placeholder="повт." aria-label="Повторы ${ex[0]} подход ${s+1}" value="${initialReps}">`;
-   wrap.append(row);
-  }
-  $("exercises").append(wrap);
- });
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{day=b.dataset.day;render()}));
 function persist(){localStorage.setItem("trainingDiaryV1",JSON.stringify(data));refreshProgressExerciseOptions();updateHistory()}
