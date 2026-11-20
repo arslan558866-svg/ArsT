@@ -5,24 +5,31 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       xcode: latest
-      cocoapods: default
       integrations:
         app_store_connect: AppStoreConnect
     scripts:
-      - name: Install XcodeGen
+      - name: Распаковать исходный проект
+        script: |
+          cd "$CM_BUILD_DIR"
+          unzip -o "SozdaySebya_iOS_CloudBuild.zip" -d "$CM_BUILD_DIR"
+          cd "$CM_BUILD_DIR/MoyFitnessPRO_iOS_Source"
+          test -f project.yml
+          test -d MoyFitnessPRO
+      - name: Установить XcodeGen и создать Xcode-проект
         script: |
           brew install xcodegen
-      - name: Generate Xcode project
-        script: |
+          cd "$CM_BUILD_DIR/MoyFitnessPRO_iOS_Source"
           xcodegen generate
-      - name: Configure code signing
+      - name: Настроить подпись Apple
         script: |
+          cd "$CM_BUILD_DIR/MoyFitnessPRO_iOS_Source"
           xcode-project use-profiles
-      - name: Build signed IPA
+      - name: Собрать IPA
         script: |
-          xcode-project build-ipa --project "$CM_BUILD_DIR/MoyFitnessPRO.xcodeproj" --scheme MoyFitnessPRO
+          cd "$CM_BUILD_DIR/MoyFitnessPRO_iOS_Source"
+          xcode-project build-ipa --project "$CM_BUILD_DIR/MoyFitnessPRO_iOS_Source/MoyFitnessPRO.xcodeproj" --scheme MoyFitnessPRO
     artifacts:
-      - build/ios/ipa/*.ipa
+      - MoyFitnessPRO_iOS_Source/build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
     publishing:
       app_store_connect:
