@@ -1,4 +1,5 @@
 name: Publish training diary to GitHub Pages
+# Trigger deployment after Pages activation
 
 on:
   push:
