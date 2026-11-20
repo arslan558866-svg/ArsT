@@ -36,6 +36,7 @@ textarea{min-height:70px;resize:vertical}
 .exercise-tip{background:#f5f2ea;border-left:3px solid var(--gold);padding:8px 9px;border-radius:6px;margin-top:8px}
 .exercise-media .sub{line-height:1.4}
 .rest-badge{display:inline-block;background:#edf1f5;color:#14243A;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:700;margin:7px 0}.rest-timer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f7f8fa;border:1px solid var(--line);border-radius:11px;padding:9px;margin:5px 0 10px}.rest-clock{font-size:20px;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;min-width:58px}.rest-timer button{border:0;border-radius:8px;padding:8px 10px;font-weight:700;background:var(--navy);color:#fff;font-size:11px}.rest-timer button.reset-rest{background:#edf1f5;color:var(--navy)}.rest-done{font-size:11px;color:var(--teal);font-weight:700}.exercise-actions{display:flex;gap:8px;margin-top:8px}.exercise-actions .btn{margin:0;padding:9px 10px;font-size:12px}.add-exercise-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:14px}.add-exercise-row .btn{width:auto;margin:0;white-space:nowrap;padding:12px}.setrow .remove-set{border:0;background:#fbeeee;color:#9b3333;border-radius:8px;padding:7px 5px;font-size:11px}.sethead{grid-template-columns:34px 1fr 1fr 30px}.setrow{grid-template-columns:34px 1fr 1fr 30px}
+.muscle-focus{margin-top:10px;padding:10px 11px;background:#f5f2ea;border-left:3px solid var(--gold);border-radius:8px;font-size:12px;line-height:1.5;color:#354052}.muscle-focus b{color:var(--navy)}
 .exercise-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
 .exercise-title strong{font-size:14px}.prescription{font-size:12px;color:var(--muted);white-space:nowrap}
 .sethead,.setrow{display:grid;grid-template-columns:34px minmax(0,1fr) minmax(0,1fr) 30px;gap:8px;align-items:center}
@@ -81,7 +82,7 @@ footer{text-align:center;color:#8b96a5;font-size:11px;padding:10px}
       <div><label for="date">Дата тренировки</label><input id="date" type="date"></div>
       <div><label for="week">Неделя программы</label><select id="week"></select></div>
     </div>
-    <div class="sub" id="dayTitle">Тренировка A · Понедельник</div>
+    <div class="sub" id="dayTitle">Тренировка A · Понедельник</div><div class="muscle-focus" id="muscleFocus" aria-live="polite"></div>
   </section>
   <section class="card">
     <div class="calendar-nav"><button id="prevMonth" type="button">‹</button><h2 id="monthLabel" style="margin:0">Календарь</h2><button id="nextMonth" type="button">›</button></div>
@@ -161,6 +162,11 @@ const program={
  ["Сгибание рук на бицепс","2","12",""],
  ["Разгибание рук на трицепс на блоке","2","12",""],
  ["Боковая планка","2","15–25 сек/сторона",""]]}
+};
+const muscleFocus={
+ A:{main:"Широчайшие мышцы спины, середина спины и грудные мышцы",support:"Бицепсы, трицепсы, передняя часть плеч, мышцы живота и глубокие мышцы корпуса",note:"День верха тела: тяговые и жимовые движения."},
+ B:{main:"Квадрицепсы, задняя поверхность бёдер и ягодичные мышцы",support:"Икроножные мышцы, мышцы живота и стабилизаторы поясницы",note:"День ног и устойчивости корпуса."},
+ C:{main:"Широчайшие мышцы и середина спины, средняя часть дельтовидных мышц",support:"Бицепсы, трицепсы и косые мышцы живота",note:"День спины, плеч и рук с работой на стабилизацию корпуса."}
 };
 const exerciseGuides={
 "Подтягивания в гравитроне":{img:"assisted-pullup",steps:["Настрой противовес так, чтобы сохранять контроль во всём движении.","Возьмись за рукояти, опусти плечи от ушей и стабилизируй корпус.","Подтянись, направляя локти вниз; не раскачивайся.","Опускайся плавно, не бросая вес."],tip:"Не вытягивай плечи к ушам и не проваливайся резко в нижней точке."},
@@ -269,6 +275,7 @@ function addSetRow(container,name,index,prevSet={},fallbackWeight=""){
 function render(){
  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.day===day));
  $("dayTitle").textContent=program[day].title;
+ const focus=muscleFocus[day];$("muscleFocus").innerHTML=`<b>Основная нагрузка:</b> ${focus.main}<br><b>Дополнительно:</b> ${focus.support}<br><span>${focus.note}</span>`;
  $("exercises").innerHTML="";
  const previous=[...data.workouts].reverse().find(w=>w.day===day);
  program[day].items.forEach((ex,i)=>$("exercises").append(makeExerciseCard(ex,i,previous)));
