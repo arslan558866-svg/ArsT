@@ -3,10 +3,13 @@ workflows:
     name: Создай себя — iOS TestFlight
     max_build_duration: 60
     instance_type: mac_mini_m2
+
+    integrations:
+      app_store_connect: AppStoreConnect
+
     environment:
       xcode: latest
-      integrations:
-        app_store_connect: AppStoreConnect
+
     scripts:
       - name: Распаковать исходный проект
         script: |
@@ -15,22 +18,27 @@ workflows:
           cd "$CM_BUILD_DIR/MoyFitnessPRO_iOS_Source"
           test -f project.yml
           test -d MoyFitnessPRO
+
       - name: Установить XcodeGen и создать Xcode-проект
         script: |
           brew install xcodegen
           cd "$CM_BUILD_DIR/MoyFitnessPRO_iOS_Source"
           xcodegen generate
+
       - name: Настроить подпись Apple
         script: |
           cd "$CM_BUILD_DIR/MoyFitnessPRO_iOS_Source"
           xcode-project use-profiles
+
       - name: Собрать IPA
         script: |
           cd "$CM_BUILD_DIR/MoyFitnessPRO_iOS_Source"
           xcode-project build-ipa --project "$CM_BUILD_DIR/MoyFitnessPRO_iOS_Source/MoyFitnessPRO.xcodeproj" --scheme MoyFitnessPRO
+
     artifacts:
       - MoyFitnessPRO_iOS_Source/build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
+
     publishing:
       app_store_connect:
         auth: integration
