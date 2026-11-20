@@ -31,6 +31,7 @@ textarea{min-height:70px;resize:vertical}
 .exercise-media{display:grid;grid-template-columns:112px 1fr;gap:11px;align-items:start;margin:10px 0}
 .exercise-media img{width:112px;height:92px;object-fit:cover;border-radius:11px;border:1px solid var(--line);background:#eef1f4}
 .exercise-guide{background:#f7f8fa;border:1px solid var(--line);border-radius:11px;padding:10px;margin:8px 0 10px;font-size:12px;line-height:1.5}
+.exercise-muscles{margin:8px 0;padding:8px 9px;background:#edf1f5;border-radius:8px;font-size:11px;line-height:1.5;color:#354052}.exercise-muscles b{color:#14243A}
 .exercise-guide summary{font-weight:700;color:var(--navy);cursor:pointer;padding:2px 0}
 .exercise-guide ol{padding-left:19px;margin:8px 0}.exercise-guide li{margin:4px 0}
 .exercise-tip{background:#f5f2ea;border-left:3px solid var(--gold);padding:8px 9px;border-radius:6px;margin-top:8px}
@@ -168,6 +169,30 @@ const muscleFocus={
  B:{main:"Квадрицепсы, задняя поверхность бёдер и ягодичные мышцы",support:"Икроножные мышцы, мышцы живота и стабилизаторы поясницы",note:"День ног и устойчивости корпуса."},
  C:{main:"Широчайшие мышцы и середина спины, средняя часть дельтовидных мышц",support:"Бицепсы, трицепсы и косые мышцы живота",note:"День спины, плеч и рук с работой на стабилизацию корпуса."}
 };
+const exerciseMuscles={
+ "Подтягивания в гравитроне":{main:"широчайшие мышцы спины, большая круглая мышца",support:"бицепсы, плечевая и плече-лучевая мышцы, мышцы средней части спины"},
+ "Горизонтальная тяга блока":{main:"средняя часть спины: ромбовидные и средняя трапеция",support:"широчайшие мышцы, задние дельты, бицепсы"},
+ "Жим штанги лёжа":{main:"большая грудная мышца",support:"трицепсы, передние дельты"},
+ "Сведение рук в тренажёре (бабочка)":{main:"большая грудная мышца",support:"передние дельты"},
+ "Гакк-присед":{main:"квадрицепсы",support:"большая ягодичная мышца, приводящие мышцы бедра"},
+ "Сгибание ног в тренажёре":{main:"задняя поверхность бедра: двуглавая, полусухожильная и полуперепончатая мышцы",support:"икроножная мышца участвует в движении как помощник"},
+ "Разгибание ног в тренажёре":{main:"квадрицепс (четырёхглавая мышца бедра)",support:"—"},
+ "Ягодичный мост":{main:"большая ягодичная мышца",support:"задняя поверхность бедра, мышцы живота как стабилизаторы"},
+ "Bird Dog":{main:"глубокие мышцы корпуса и стабилизаторы позвоночника",support:"ягодичные мышцы, разгибатели спины, мышцы плечевого пояса"},
+ "Подъёмы на носки":{main:"икроножная и камбаловидная мышцы",support:"мышцы стопы и голеностопа"},
+ "Тяга верхнего блока":{main:"широчайшие мышцы спины",support:"большая круглая мышца, бицепсы, мышцы средней части спины"},
+ "Разведение гантелей в стороны (без боли)":{main:"средняя часть дельтовидных мышц",support:"надостная мышца и верхняя часть трапеции помогают движению"},
+ "Сгибание рук на бицепс":{main:"двуглавая мышца плеча (бицепс)",support:"плечевая и плече-лучевая мышцы предплечья"},
+ "Разгибание рук на трицепс на блоке":{main:"трёхглавая мышца плеча (трицепс)",support:"локтевая мышца"},
+ "Боковая планка":{main:"косые мышцы живота и поперечная мышца живота",support:"средняя ягодичная мышца, квадратная мышца поясницы и стабилизаторы плеча"},
+ "Dead Bug":{main:"поперечная мышца живота и глубокие мышцы корпуса",support:"косые мышцы живота, сгибатели бедра работают согласованно"},
+ "Жим гантелей лёжа нейтральным хватом":{main:"большая грудная мышца",support:"трицепсы, передние дельты; нейтральный хват может быть комфортнее для плеча"},
+ "Тяга гантели с опорой":{main:"широчайшая мышца и ромбовидные мышцы спины",support:"задняя дельта, бицепс, мышцы корпуса стабилизируют положение"},
+ "Приседание к скамье без веса":{main:"квадрицепсы и большая ягодичная мышца",support:"задняя поверхность бедра, приводящие мышцы и мышцы корпуса"},
+ "Разгибание рук с канатом":{main:"трёхглавая мышца плеча (трицепс)",support:"локтевая мышца"},
+ "Сгибание рук на нижнем блоке":{main:"двуглавая мышца плеча (бицепс)",support:"плечевая и плече-лучевая мышцы"},
+ "Обратная бабочка":{main:"задние дельтовидные мышцы",support:"ромбовидные мышцы и средняя/нижняя часть трапеции"}
+};
 const exerciseGuides={
 "Подтягивания в гравитроне":{img:"assisted-pullup",steps:["Настрой противовес так, чтобы сохранять контроль во всём движении.","Возьмись за рукояти, опусти плечи от ушей и стабилизируй корпус.","Подтянись, направляя локти вниз; не раскачивайся.","Опускайся плавно, не бросая вес."],tip:"Не вытягивай плечи к ушам и не проваливайся резко в нижней точке."},
 "Горизонтальная тяга блока":{img:"seated-row",steps:["Сядь устойчиво, стопы поставь на платформу, спину держи нейтрально.","Начни движение сведением лопаток.","Потяни рукоять к нижним рёбрам, локти веди вдоль корпуса.","Верни рукоять вперёд медленно, не округляя поясницу."],tip:"Не отклоняй корпус назад рывком и не округляй поясницу."},
@@ -226,14 +251,16 @@ function formatRest(sec){return `${Math.floor(sec/60)} мин${sec%60?` ${sec%60
 function makeExerciseCard(ex,i,previous){
  const name=ex[0], prescribed=Number(ex[1])||2, range=ex[2]||"8–12";
  const guide=exerciseGuides[name];
+  const muscles=exerciseMuscles[name]||{main:"основные мышцы, выполняющие движение",support:"мышцы-стабилизаторы корпуса и суставов"};
+  const muscleHtml=`<div class="exercise-muscles"><b>Работают:</b> ${muscles.main}<br><b>Помогают:</b> ${muscles.support}</div>`;
  const imgNo=photoByExercise[name];
  const imgSrc=imgNo?`/ArsT/exercise-${String(imgNo).padStart(2,"0")}.jpg`:"";
  const prevExercise=previous?.items?.find(x=>x.name===name);
  const wrap=document.createElement("div");wrap.className="exercise";wrap.dataset.name=name;
  const photo=imgSrc?`<div class="exercise-media"><img src="${imgSrc}" alt="Фото упражнения ${name}" loading="lazy"><div><div class="sub">Фото выполнения</div><div class="sub" style="margin-top:5px">${prescribed} подхода · ${range} повторений</div></div></div>`:
  `<div class="exercise-media"><div style="width:112px;height:92px;border-radius:11px;background:#edf1f5;display:grid;place-items:center;color:#718096;font-size:11px;text-align:center;padding:6px">Фото<br>упражнения</div><div class="sub">Иллюстрация будет добавлена в следующем обновлении.</div></div>`;
- const guideHtml=guide?`<details class="exercise-guide"><summary>Как выполнять · техника и подсказки</summary><ol>${guide.steps.map(x=>`<li>${x}</li>`).join("")}</ol><div class="exercise-tip"><b>Важно:</b> ${guide.tip}</div></details>`:
- `<details class="exercise-guide"><summary>Как выполнять · техника и подсказки</summary><ol><li>Займи устойчивое исходное положение и настрой оборудование.</li><li>Выполняй движение плавно, без рывков и раскачивания.</li><li>Контролируй возврат в исходное положение.</li><li>Дыши свободно, не задерживай дыхание.</li></ol><div class="exercise-tip"><b>Важно:</b> Работай в безболезненной амплитуде и прекращай упражнение при боли.</div></details>`;
+ const guideHtml=guide?`<details class="exercise-guide"><summary>Как выполнять · техника и подсказки</summary>${muscleHtml}<ol>${guide.steps.map(x=>`<li>${x}</li>`).join("")}</ol><div class="exercise-tip"><b>Важно:</b> ${guide.tip}</div></details>`:
+ `<details class="exercise-guide"><summary>Как выполнять · техника и подсказки</summary>${muscleHtml}<ol><li>Займи устойчивое исходное положение и настрой оборудование.</li><li>Выполняй движение плавно, без рывков и раскачивания.</li><li>Контролируй возврат в исходное положение.</li><li>Дыши свободно, не задерживай дыхание.</li></ol><div class="exercise-tip"><b>Важно:</b> Работай в безболезненной амплитуде и прекращай упражнение при боли.</div></details>`;
  const rest=restByExercise[name]||75;
  wrap.innerHTML=`<div class="exercise-title"><strong>${i+1}. ${name}</strong><span class="prescription">${prescribed} × ${range}</span></div>${photo}${guideHtml}<div class="rest-badge">Отдых между подходами: ${formatRest(rest)}</div><div class="rest-timer"><span class="rest-clock"></span><button type="button" class="start-rest">Старт отдыха</button><button type="button" class="reset-rest">Сброс</button><span class="rest-done" aria-live="polite"></span></div><div class="sethead"><span>№</span><span>Вес, кг</span><span>Повторы</span><span></span></div><div class="sets-container"></div><div class="exercise-actions"><button type="button" class="btn light add-set">＋ Добавить подход</button><button type="button" class="btn light remove-exercise">Убрать</button></div>`;
  const setsContainer=wrap.querySelector(".sets-container");
